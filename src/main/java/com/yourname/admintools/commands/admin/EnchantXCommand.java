@@ -1,5 +1,7 @@
 package com.yourname.admintools.commands.admin;
 
+import java.util.Map;
+
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 
@@ -8,19 +10,26 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
+
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+
 import net.minecraft.network.chat.Component;
+
 import net.minecraft.world.entity.player.Player;
+
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class EnchantXCommand {
+
 
     public static void register(
             CommandDispatcher<CommandSourceStack> dispatcher,
             CommandBuildContext buildContext
     ) {
+
 
         dispatcher.register(
 
@@ -30,12 +39,14 @@ public class EnchantXCommand {
                                 source.hasPermission(2)
                         )
 
+
                         .then(
 
                                 Commands.argument(
                                         "target",
                                         EntityArgument.player()
                                 )
+
 
                                 .then(
 
@@ -47,17 +58,20 @@ public class EnchantXCommand {
                                                 )
                                         )
 
+
                                         .then(
 
                                                 Commands.argument(
                                                         "level",
                                                         IntegerArgumentType.integer(
-                                                                0,
+                                                                1,
                                                                 1000
                                                         )
                                                 )
 
+
                                                 .executes(context -> {
+
 
                                                     Player player =
                                                             EntityArgument.getPlayer(
@@ -65,11 +79,13 @@ public class EnchantXCommand {
                                                                     "target"
                                                             );
 
+
                                                     Holder<Enchantment> enchantment =
                                                             ResourceArgument.getEnchantment(
                                                                     context,
                                                                     "enchantment"
                                                             );
+
 
                                                     int level =
                                                             IntegerArgumentType.getInteger(
@@ -77,37 +93,81 @@ public class EnchantXCommand {
                                                                     "level"
                                                             );
 
+
                                                     ItemStack stack =
                                                             player.getMainHandItem();
 
+
+
                                                     if (stack.isEmpty()) {
 
-                                                        context.getSource().sendFailure(
-                                                                Component.literal(
-                                                                        "Target is not holding an item."
-                                                                )
-                                                        );
+
+                                                        context.getSource()
+                                                                .sendFailure(
+                                                                        Component.literal(
+                                                                                "Target is not holding an item."
+                                                                        )
+                                                                );
+
 
                                                         return 0;
 
                                                     }
 
-                                                    // TODO:
-                                                    // Apply enchantment here.
 
-                                                    context.getSource().sendSuccess(
-                                                            () -> Component.literal(
-                                                                    "Target: "
-                                                                            + player.getName().getString()
-                                                                            + "\nEnchantment: "
-                                                                            + enchantment.value().getDescriptionId()
-                                                                            + "\nLevel: "
-                                                                            + level
-                                                            ),
-                                                            false
+
+                                                    /*
+                                                     * Get existing enchantments
+                                                     */
+
+                                                    Map<Enchantment, Integer> enchantments =
+                                                            EnchantmentHelper.getEnchantments(
+                                                                    stack
+                                                            );
+
+
+
+                                                    /*
+                                                     * Add enchantment
+                                                     *
+                                                     * No vanilla compatibility check.
+                                                     * Any item can receive it.
+                                                     */
+
+                                                    enchantments.put(
+                                                            enchantment.value(),
+                                                            level
                                                     );
 
+
+
+                                                    /*
+                                                     * Save enchantments
+                                                     */
+
+                                                    EnchantmentHelper.setEnchantments(
+                                                            enchantments,
+                                                            stack
+                                                    );
+
+
+
+                                                    context.getSource()
+                                                            .sendSuccess(
+                                                                    () -> Component.literal(
+                                                                            "Applied "
+                                                                                    + enchantment.value().getDescriptionId()
+                                                                                    + " level "
+                                                                                    + level
+                                                                                    + " to "
+                                                                                    + stack.getHoverName().getString()
+                                                                    ),
+                                                                    true
+                                                            );
+
+
                                                     return 1;
+
 
                                                 })
 
@@ -119,6 +179,8 @@ public class EnchantXCommand {
 
         );
 
+
     }
+
 
 }
