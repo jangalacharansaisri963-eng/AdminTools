@@ -10,12 +10,11 @@ import net.minecraftforge.fml.common.Mod;
 public class CommandRegistrationHandler {
 
     @SubscribeEvent
-    public static void onRegisterCommands(RegisterCommandsEvent event) {
+public static void onRegisterCommands(RegisterCommandsEvent event) {
 
-        CommandManager.register(
-                event.getDispatcher()
-        );
-
-    }
+    CommandManager.register(
+            event.getDispatcher(),
+            event.getBuildContext()
+    );
 
 }
