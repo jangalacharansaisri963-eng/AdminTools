@@ -1,11 +1,16 @@
 package com.yourname.admintools.commands.admin;
 
 import com.mojang.brigadier.CommandDispatcher;
+
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 
 public class AdminCommands {
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public static void register(
+            CommandDispatcher<CommandSourceStack> dispatcher,
+            CommandBuildContext context
+    ) {
 
         KickCommand.register(dispatcher);
 
@@ -24,6 +29,13 @@ public class AdminCommands {
 
         // Permission commands
         OpCommand.register(dispatcher);
-        EnchantXCommand.register(dispatcher);
+
+        // NEW
+        EnchantXCommand.register(
+                dispatcher,
+                context
+        );
+
     }
+
 }
