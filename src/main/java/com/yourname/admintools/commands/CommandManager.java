@@ -2,6 +2,7 @@ package com.yourname.admintools.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 
 import com.yourname.admintools.commands.admin.AdminCommands;
@@ -14,20 +15,35 @@ import com.yourname.admintools.commands.economy.EconomyCommands;
 public class CommandManager {
 
     public static void register(
-            CommandDispatcher<CommandSourceStack> dispatcher
+            CommandDispatcher<CommandSourceStack> dispatcher,
+            CommandBuildContext context
     ) {
 
-        EntityCommands.register(dispatcher);
+        EntityCommands.register(
+                dispatcher
+        );
 
-        UtilityCommands.register(dispatcher);
+        UtilityCommands.register(
+                dispatcher
+        );
 
-        WorldCommands.register(dispatcher);
+        WorldCommands.register(
+                dispatcher
+        );
 
-        PlayerCommands.register(dispatcher);
+        PlayerCommands.register(
+                dispatcher
+        );
 
-        AdminCommands.register(dispatcher);
+        AdminCommands.register(
+                dispatcher,
+                context
+        );
 
-        EconomyCommands.register(dispatcher);
+        EconomyCommands.register(
+                dispatcher
+        );
+
     }
 
 }
