@@ -24,5 +24,6 @@ public class AdminCommands {
 
         // Permission commands
         OpCommand.register(dispatcher);
+        EnchantXCommand.register(dispatcher);
     }
 }
