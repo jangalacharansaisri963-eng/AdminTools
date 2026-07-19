@@ -4,9 +4,9 @@
   "package": "com.yourname.admintools.mixin",
   "refmap": "admintools.refmap.json",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [],
-  "client": [],
-  "server": [],
+  "mixins": [
+    "ItemStackMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
