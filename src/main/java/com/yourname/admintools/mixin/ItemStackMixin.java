@@ -33,10 +33,8 @@ public class ItemStackMixin implements IItemStackExtension {
     public void admintools$applyGodPower(int level) {
         ItemStack self = (ItemStack) (Object) this;
         
-        // Remove existing attribute to prevent stacking
-        self.removeAttributeModifier(Attributes.ATTACK_DAMAGE, GOD_DAMAGE_UUID);
-        
-        // Add new damage attribute
+        // We simply add the modifier. If the UUID already exists on the item, 
+        // the game engine automatically replaces the old value with this new one.
         self.addAttributeModifier(
             Attributes.ATTACK_DAMAGE, 
             new AttributeModifier(GOD_DAMAGE_UUID, "GodPower", (double) level, AttributeModifier.Operation.ADDITION), 
