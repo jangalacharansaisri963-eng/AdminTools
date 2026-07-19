@@ -1,57 +1,190 @@
-package com.yourname.admintools.commands.admin;
+package com.yourname.admintools.commands.economy;
+
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 
-import com.yourname.admintools.api.IItemStackExtension; // Assuming you set up the interface
 
-import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ResourceArgument;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
+import com.yourname.admintools.manager.EconomyManager;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 
-public class EnchantXCommand {
+
+
+public class SendMoneyCommand {
+
+
 
     public static void register(
-            CommandDispatcher<CommandSourceStack> dispatcher,
-            CommandBuildContext buildContext
-    ) {
+            CommandDispatcher<CommandSourceStack> dispatcher
+    ){
+
+
+
         dispatcher.register(
-                Commands.literal("enchantx")
-                        .requires(source -> source.hasPermission(2))
-                        .then(Commands.argument("target", EntityArgument.player())
-                                .then(Commands.argument("enchantment", ResourceArgument.resource(buildContext, Registries.ENCHANTMENT))
-                                        .then(Commands.argument("level", IntegerArgumentType.integer(1, 1000))
-                                                .executes(context -> {
-                                                    Player target = EntityArgument.getPlayer(context, "target");
-                                                    Holder<Enchantment> enchantment = ResourceArgument.getEnchantment(context, "enchantment");
-                                                    int level = IntegerArgumentType.getInteger(context, "level");
-                                                    ItemStack stack = target.getMainHandItem();
 
-                                                    if (stack.isEmpty()) {
-                                                        context.getSource().sendFailure(Component.literal("Target is not holding an item."));
-                                                        return 0;
-                                                    }
 
-                                                    // Implementation using your Mixin extension
-                                                    ((IItemStackExtension) (Object) stack).admintools$addEnchantment(enchantment.value(), level);
+                Commands.literal("sendmoney")
 
-                                                    context.getSource().sendSuccess(() -> Component.literal(
-                                                            "Applied " + enchantment.value().getDescriptionId() + " level " + level + " to " + stack.getHoverName().getString()
-                                                    ), true);
 
-                                                    return 1;
-                                                })
-                                        )
+                        .then(
+
+
+                                Commands.argument(
+                                        "player",
+                                        EntityArgument.player()
                                 )
+
+
+                                .then(
+
+
+                                        Commands.argument(
+                                                "amount",
+                                                IntegerArgumentType.integer(1)
+                                        )
+
+
+                                        .executes(context -> {
+
+
+
+                                            ServerPlayer sender =
+                                                    context.getSource()
+                                                    .getPlayer();
+
+
+
+                                            ServerPlayer target =
+                                                    EntityArgument.getPlayer(
+                                                            context,
+                                                            "player"
+                                                    );
+
+
+
+                                            int amount =
+                                                    IntegerArgumentType.getInteger(
+                                                            context,
+                                                            "amount"
+                                                    );
+
+
+
+                                            ServerLevel level =
+                                                    context.getSource()
+                                                    .getLevel();
+
+
+
+                                            EconomyManager economy =
+                                                    EconomyManager.get(
+                                                            level
+                                                    );
+
+
+
+                                            boolean removed =
+                                                    economy.removeMoney(
+                                                            sender.getUUID(),
+                                                            amount
+                                                    );
+
+
+
+                                            if(!removed){
+
+
+                                                context.getSource()
+                                                        .sendFailure(
+
+                                                                Component.literal(
+                                                                        "You don't have enough money"
+                                                                )
+
+                                                        );
+
+
+                                                return 0;
+
+                                            }
+
+
+
+
+
+                                            economy.addMoney(
+                                                    target.getUUID(),
+                                                    amount
+                                            );
+
+
+
+
+
+                                            context.getSource()
+                                                    .sendSuccess(
+
+
+                                                            () -> Component.literal(
+
+                                                                    "Sent $"
+                                                                    + amount
+                                                                    + " to "
+                                                                    + target.getName()
+                                                                    .getString()
+
+                                                            ),
+
+
+                                                            false
+
+                                                    );
+
+
+
+
+
+                                            target.sendSystemMessage(
+
+
+                                                    Component.literal(
+
+                                                            "You received $"
+                                                            + amount
+                                                            + " from "
+                                                            + sender.getName()
+                                                            .getString()
+
+                                                    )
+
+
+                                            );
+
+
+
+                                            return 1;
+
+
+
+                                        })
+
+
+                                )
+
+
                         )
+
+
         );
+
+
+
     }
+
+
 }
