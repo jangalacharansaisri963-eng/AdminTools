@@ -100,7 +100,11 @@ public class TaxManager {
 
         for (UUID player : dueDates.keySet()) {
 
-            if (isExpired(player)) {
+            if (
+                    isExpired(player)
+                    &&
+                    !BankManager.isFrozen(player)
+            ) {
 
                 BankManager.freezeAccount(
                         player
