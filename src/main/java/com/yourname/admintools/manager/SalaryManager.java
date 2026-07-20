@@ -8,50 +8,93 @@ import java.util.UUID;
 
 public class SalaryManager {
 
-    public static final int DEFAULT_SALARY = 1000;
-
-    private static final long COOLDOWN =
-            24L * 60L * 60L * 1000L;
-
-    private static final Map<UUID, Long> lastSalary =
+    private static final Map<UUID, Integer> salaries =
             new HashMap<>();
 
-    public static boolean canReceiveSalary(
-            UUID player
+    private static final Map<UUID, Long> nextPayDay =
+            new HashMap<>();
+
+    public static final long SALARY_INTERVAL =
+            30L * 24000L;
+
+    public static void setSalary(
+            UUID player,
+            int amount,
+            long currentDay
     ) {
 
-        long last =
-                lastSalary.getOrDefault(
-                        player,
-                        0L
-                );
+        salaries.put(
+                player,
+                amount
+        );
 
-        return System.currentTimeMillis() - last
-                >= COOLDOWN;
+        nextPayDay.put(
+                player,
+                currentDay + SALARY_INTERVAL
+        );
 
     }
 
-    public static boolean paySalary(
-            ServerLevel level,
+    public static int getSalary(
             UUID player
     ) {
 
-        if (!canReceiveSalary(player)) {
-            return false;
-        }
-
-        EconomyManager.get(level)
-                .addMoney(
-                        player,
-                        DEFAULT_SALARY
-                );
-
-        lastSalary.put(
+        return salaries.getOrDefault(
                 player,
-                System.currentTimeMillis()
+                0
         );
 
-        return true;
+    }
+
+    public static boolean hasSalary(
+            UUID player
+    ) {
+
+        return salaries.containsKey(
+                player
+        );
+
+    }
+
+    public static void removeSalary(
+            UUID player
+    ) {
+
+        salaries.remove(
+                player
+        );
+
+        nextPayDay.remove(
+                player
+        );
+
+    }
+
+    public static void tick(
+            ServerLevel level
+    ) {
+
+        long day =
+                level.getDayTime();
+
+        for(UUID player : salaries.keySet()){
+
+            if(day >= nextPayDay.get(player)){
+
+                EconomyManager.get(level)
+                        .addMoney(
+                                player,
+                                salaries.get(player)
+                        );
+
+                nextPayDay.put(
+                        player,
+                        day + SALARY_INTERVAL
+                );
+
+            }
+
+        }
 
     }
 
