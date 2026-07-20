@@ -16,10 +16,11 @@ import java.util.UUID;
 @Mixin(ItemStack.class)
 public class ItemStackMixin implements IItemStackExtension {
 
+    // Keep @Unique here because this field is only used inside this mixin class
     @Unique
     private static final UUID GOD_DAMAGE_UUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
 
-    @Unique
+    // Removed @Unique so the public interface contract can be safely fulfilled
     @Override
     public void admintools$addEnchantment(Enchantment enchantment, int level) {
         ItemStack self = (ItemStack) (Object) this;
@@ -28,13 +29,11 @@ public class ItemStackMixin implements IItemStackExtension {
         EnchantmentHelper.setEnchantments(enchantments, self);
     }
 
-    @Unique
+    // Removed @Unique so your other mod classes can actually see and call this method
     @Override
     public void admintools$applyGodPower(int level) {
         ItemStack self = (ItemStack) (Object) this;
         
-        // We simply add the modifier. If the UUID already exists on the item, 
-        // the game engine automatically replaces the old value with this new one.
         self.addAttributeModifier(
             Attributes.ATTACK_DAMAGE, 
             new AttributeModifier(GOD_DAMAGE_UUID, "GodPower", (double) level, AttributeModifier.Operation.ADDITION), 
