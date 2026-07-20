@@ -1,56 +1,100 @@
 package com.yourname.admintools.commands.economy;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 
-import com.yourname.admintools.manager.EconomyManager;
+import net.minecraft.network.chat.Component;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
-public class SalaryCommand {
+import com.yourname.admintools.manager.SalaryManager;
 
-    private static final int SALARY_AMOUNT = 1000;
+public class SalaryCommand {
 
     public static void register(
             CommandDispatcher<CommandSourceStack> dispatcher
-    ){
+    ) {
 
         dispatcher.register(
 
                 Commands.literal("salary")
 
-                        .executes(context -> {
+                        .requires(source ->
+                                source.hasPermission(2)
+                        )
 
-                            ServerPlayer player =
-                                    context.getSource()
-                                            .getPlayer();
+                        .then(
 
-                            ServerLevel level =
-                                    context.getSource()
-                                            .getLevel();
+                                Commands.argument(
+                                        "player",
+                                        net.minecraft.commands.arguments.EntityArgument.player()
+                                )
 
-                            EconomyManager economy =
-                                    EconomyManager.get(level);
+                                        .then(
 
-                            economy.addMoney(
-                                    player.getUUID(),
-                                    SALARY_AMOUNT
-                            );
+                                                Commands.argument(
+                                                        "amount",
+                                                        IntegerArgumentType.integer(
+                                                                1
+                                                        )
+                                                )
 
-                            context.getSource().sendSuccess(
-                                    () -> Component.literal(
-                                            "You received your salary of $" + SALARY_AMOUNT
-                                    ),
-                                    false
-                            );
+                                                        .executes(context -> {
 
-                            return 1;
+                                                            ServerPlayer target =
+                                                                    net.minecraft.commands.arguments.EntityArgument.getPlayer(
+                                                                            context,
+                                                                            "player"
+                                                                    );
 
-                        })
+                                                            int amount =
+                                                                    IntegerArgumentType.getInteger(
+                                                                            context,
+                                                                            "amount"
+                                                                    );
+
+                                                            ServerLevel level =
+                                                                    context.getSource()
+                                                                            .getLevel();
+
+                                                            SalaryManager.setSalary(
+
+                                                                    target.getUUID(),
+
+                                                                    amount,
+
+                                                                    level.getDayTime()
+
+                                                            );
+
+                                                            context.getSource()
+                                                                    .sendSuccess(
+
+                                                                            () -> Component.literal(
+
+                                                                                    "Salary created for "
+                                                                                            + target.getName().getString()
+                                                                                            + ": $"
+                                                                                            + amount
+                                                                                            + " every 30 Minecraft days."
+
+                                                                            ),
+
+                                                                            true
+
+                                                                    );
+
+                                                            return 1;
+
+                                                        })
+
+                                        )
+
+                        )
 
         );
 
