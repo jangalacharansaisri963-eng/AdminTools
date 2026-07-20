@@ -1,13 +1,13 @@
 package com.yourname.admintools.commands.economy;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import com.yourname.admintools.manager.TaxManager;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.IntegerArgumentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
