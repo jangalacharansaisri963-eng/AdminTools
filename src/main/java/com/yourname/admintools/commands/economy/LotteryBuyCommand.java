@@ -10,13 +10,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
-import com.yourname.admintools.manager.EconomyManager;
+import java.util.List;
+
 import com.yourname.admintools.manager.LotteryManager;
 
 public class LotteryBuyCommand {
-
-    private static final int PRICE =
-            1000;
 
     public static void register(
             CommandDispatcher<CommandSourceStack> dispatcher
@@ -46,37 +44,36 @@ public class LotteryBuyCommand {
                                                     context.getSource()
                                                             .getLevel();
 
-                                            EconomyManager economy =
-                                                    EconomyManager.get(
-                                                            level
-                                                    );
-
                                             int amount =
                                                     IntegerArgumentType.getInteger(
                                                             context,
                                                             "amount"
                                                     );
 
-                                            int totalPrice =
-                                                    amount * PRICE;
-
-                                            if (!economy.removeMoney(
+                                            if (!LotteryManager.buyTickets(
+                                                    level,
                                                     player.getUUID(),
-                                                    totalPrice
+                                                    amount
                                             )) {
 
                                                 context.getSource()
                                                         .sendFailure(
-
                                                                 Component.literal(
-                                                                        "Not enough money."
+                                                                        "Unable to purchase lottery tickets."
                                                                 )
-
                                                         );
 
                                                 return 0;
 
                                             }
+
+                                            List<String> tickets =
+                                                    LotteryManager.getTickets(
+                                                            player.getUUID()
+                                                    );
+
+                                            int start =
+                                                    tickets.size() - amount;
 
                                             StringBuilder builder =
                                                     new StringBuilder();
@@ -93,27 +90,14 @@ public class LotteryBuyCommand {
                                                     " ticket(s)\n\n"
                                             );
 
-                                            for (int i = 0; i < amount; i++) {
-
-                                                LotteryManager.buyTicket(
-                                                        player.getUUID()
-                                                );
-
-                                                String ticket =
-                                                        LotteryManager
-                                                                .getTickets(
-                                                                        player.getUUID()
-                                                                )
-                                                                .get(
-                                                                        LotteryManager
-                                                                                .getTickets(
-                                                                                        player.getUUID()
-                                                                                )
-                                                                                .size() - 1
-                                                                );
+                                            for (
+                                                    int i = start;
+                                                    i < tickets.size();
+                                                    i++
+                                            ) {
 
                                                 builder.append(
-                                                        ticket
+                                                        tickets.get(i)
                                                 );
 
                                                 builder.append(
