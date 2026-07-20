@@ -1,10 +1,10 @@
 package com.yourname.admintools.commands.economy;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.IntegerArgumentType;
 import net.minecraft.network.chat.Component;
 
 import com.yourname.admintools.manager.EconomyManager;
