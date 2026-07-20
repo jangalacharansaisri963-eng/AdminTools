@@ -13,6 +13,9 @@ public class BankManager {
     private static final Map<UUID, Integer> bankBalances =
             new HashMap<>();
 
+    private static final Map<UUID, Boolean> frozenAccounts =
+            new HashMap<>();
+
     public static String getBankName() {
         return bankName;
     }
@@ -21,7 +24,9 @@ public class BankManager {
         bankName = name;
     }
 
-    public static int getBankBalance(UUID player) {
+    public static int getBankBalance(
+            UUID player
+    ) {
 
         return bankBalances.getOrDefault(
                 player,
@@ -35,6 +40,10 @@ public class BankManager {
             UUID player,
             int amount
     ) {
+
+        if (isFrozen(player)) {
+            return;
+        }
 
         EconomyManager economy =
                 EconomyManager.get(level);
@@ -56,6 +65,10 @@ public class BankManager {
             int amount
     ) {
 
+        if (isFrozen(player)) {
+            return false;
+        }
+
         int bank =
                 getBankBalance(player);
 
@@ -72,6 +85,38 @@ public class BankManager {
                 .addMoney(player, amount);
 
         return true;
+
+    }
+
+    public static void freezeAccount(
+            UUID player
+    ) {
+
+        frozenAccounts.put(
+                player,
+                true
+        );
+
+    }
+
+    public static void unfreezeAccount(
+            UUID player
+    ) {
+
+        frozenAccounts.remove(
+                player
+        );
+
+    }
+
+    public static boolean isFrozen(
+            UUID player
+    ) {
+
+        return frozenAccounts.getOrDefault(
+                player,
+                false
+        );
 
     }
 
