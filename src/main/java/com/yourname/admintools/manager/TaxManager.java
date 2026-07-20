@@ -75,6 +75,10 @@ public class TaxManager {
         taxes.remove(player);
         dueDates.remove(player);
 
+        BankManager.unfreezeAccount(
+                player
+        );
+
         return true;
 
     }
@@ -89,6 +93,22 @@ public class TaxManager {
 
         return System.currentTimeMillis()
                 >= dueDates.get(player);
+
+    }
+
+    public static void updateExpiredTaxes() {
+
+        for (UUID player : dueDates.keySet()) {
+
+            if (isExpired(player)) {
+
+                BankManager.freezeAccount(
+                        player
+                );
+
+            }
+
+        }
 
     }
 
