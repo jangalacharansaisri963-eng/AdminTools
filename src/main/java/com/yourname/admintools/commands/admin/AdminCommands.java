@@ -12,31 +12,61 @@ public class AdminCommands {
             CommandBuildContext context
     ) {
 
+        // ------------------------------------------
+        // Moderation
+        // ------------------------------------------
+
         KickCommand.register(dispatcher);
 
-        // Ban system
         BanCommand.register(dispatcher);
         UnbanCommand.register(dispatcher);
         TempBanCommand.register(dispatcher);
 
-        // Chat moderation
+        // ------------------------------------------
+        // Chat Moderation
+        // ------------------------------------------
+
         MuteCommand.register(dispatcher);
         UnmuteCommand.register(dispatcher);
         WarnCommand.register(dispatcher);
 
-        // Player management
+        MuteChatCommand.register(dispatcher);
+        StaffChatCommand.register(dispatcher);
+        SocialSpyCommand.register(dispatcher);
+
+        // ------------------------------------------
+        // Player Management
+        // ------------------------------------------
+
         ClearInventoryCommand.register(dispatcher);
         FreezeCommand.register(dispatcher);
 
-        // Permission commands
+        // Jail
+        JailCommand.register(dispatcher);
+        UnJailCommand.register(dispatcher);
+
+        // Ender Chest
+        EnderchestCommand.register(dispatcher);
+
+        // Teleport
+        TeleportAllCommand.register(dispatcher);
+
+        // Effects
+        ClearEffectsCommand.register(dispatcher);
+
+        // ------------------------------------------
+        // Permission Commands
+        // ------------------------------------------
+
         OpCommand.register(dispatcher);
 
-        // NEW
+        // ------------------------------------------
+        // Advanced Commands
+        // ------------------------------------------
+
         EnchantXCommand.register(
                 dispatcher,
                 context
         );
-
     }
-
 }
