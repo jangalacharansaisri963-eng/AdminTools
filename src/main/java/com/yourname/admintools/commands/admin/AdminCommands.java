@@ -17,6 +17,7 @@ public class AdminCommands {
         // Ban system
         BanCommand.register(dispatcher);
         UnbanCommand.register(dispatcher);
+        TempBanCommand.register(dispatcher);
 
         // Chat moderation
         MuteCommand.register(dispatcher);
